@@ -50,6 +50,8 @@
     <Compile Include="Sequence\Pattern.cs" />
     <Compile Include="Sequence\SequenceProcessor.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="TextProcessor.cs" />
+    <Compile Include="WordNetInterpreter\WordNet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

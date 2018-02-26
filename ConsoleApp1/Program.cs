@@ -9,10 +9,17 @@ using System.Threading.Tasks;
 
 using ConsoleApp1.Link;
 using ConsoleApp1.Sequence;
+using ConsoleApp1.WordNetInterpreter;
 
 namespace ConsoleApp1 {
   class Program {
     static void Main( string[] args ) {
+      //var wordList = new[] { "tree", "boy", "cup", "society", "brain", "orange", "glue", "left", "interesting", "cut", "crocodile", "bora bora", "salam" };
+
+      //foreach ( var word in wordList ) {
+      //  var meaning = WordNet.GetWordMeaning( word );
+      //  Console.WriteLine( $"{word}: {meaning}" );
+      //}
 
       ////8192 = 512 character x 16bit character size
       ////english contains of a quarter million distinct words: 250,000
@@ -24,34 +31,9 @@ namespace ConsoleApp1 {
 
         arr1.Link( arr2, LinkSeverity.Weak );
         var patterns = SequenceProcessor.CalculateSimillarPatterns( arr1, arr2, Settings.MinimumPatternLength );
-        
+
         Console.ReadLine();
       }
-
-      //var r = new Random();
-      //const int arrayLength = 128;
-      //var arr1 = new BitArray( arrayLength );
-      //var arr2 = new BitArray( arrayLength );
-
-      //while ( true ) {
-
-      //  SequenceProcessor.PopulateBitArray( r, arrayLength, arr1 );
-      //  SequenceProcessor.PopulateBitArray( r, arrayLength, arr2 );
-      //  SequenceProcessor.PrintBitArray( arr1 );
-      //  SequenceProcessor.PrintBitArray( arr2 );
-
-      //  var arr4 = SequenceProcessor.XNOR( arr1, arr2 );
-
-      //  SequenceProcessor.PrintBitArray( arr4 );
-
-      //  Console.ForegroundColor = ConsoleColor.Yellow;
-      //  Console.WriteLine( SequenceProcessor.ReturnMaximumPatternLength( arr4 ) );
-      //  Console.ResetColor();
-      //  arr1.SetAll( false );
-      //  arr2.SetAll( false );
-
-      //  Console.ReadLine();
-      //}
     }
 
     private static void testperformance(int iterationCount, int arrayLength) {
