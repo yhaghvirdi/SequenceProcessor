@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
-namespace ConsoleApp1.Sequence {
+using ConsoleApp1.Models;
+
+namespace ConsoleApp1.Modules {
   public static class SequenceProcessor {
 
     /// <summary>
@@ -66,15 +65,18 @@ namespace ConsoleApp1.Sequence {
 
     public static BitArray XNOR( BitArray arr1, BitArray arr2 ) {
       //AND operation
+      var arr1Clone = (BitArray) arr1.Clone();
+      var arr2Clone = (BitArray) arr2.Clone();
+
       var arr3 = (BitArray) arr1.Clone();
       arr3.And( arr2 );
 
       //NOR operation
-      var arr4 = arr1.Not().And( arr2.Not() );
+      arr1Clone = arr1Clone.Not().And( arr2Clone.Not() );
 
       //XNOR output
-      arr4.Or( arr3 );
-      return arr4;
+      arr1Clone.Or( arr3 );
+      return arr1Clone;
     }
 
     public static int ReturnMaximumPatternLength( BitArray comparedBitSequence ) {

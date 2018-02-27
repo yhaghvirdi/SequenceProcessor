@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using ConsoleApp1.Sequence;
+using ConsoleApp1.Models;
 
 namespace ConsoleApp1 {
   internal class Logger {
@@ -31,8 +31,14 @@ namespace ConsoleApp1 {
         }
       }
       else {
-        Console.WriteLine( "No Patterns" );
+        //Console.WriteLine( "No Patterns" );
       }
+      Console.ResetColor();
+    }
+
+    public static void PrintLink( int startIndex, int linkSize ) {
+      Console.ForegroundColor = ConsoleColor.Cyan;
+      Console.WriteLine( $"Link Start: {startIndex}, Size: {linkSize}" );
       Console.ResetColor();
     }
 

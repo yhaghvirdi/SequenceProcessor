@@ -42,16 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Link\LinkProcessor.cs" />
-    <Compile Include="Link\LinkSeverity.cs" />
+    <Compile Include="Models\Entity.cs" />
+    <Compile Include="Models\Link.cs" />
+    <Compile Include="Models\LinkSeverity.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Modules\World.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sequence\Pattern.cs" />
-    <Compile Include="Sequence\SequenceProcessor.cs" />
+    <Compile Include="Models\Pattern.cs" />
+    <Compile Include="Modules\SequenceProcessor.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="TextProcessor.cs" />
+    <Compile Include="Modules\TextProcessor.cs" />
     <Compile Include="WordNetInterpreter\WordNet.cs" />
+    <Compile Include="WordNetInterpreter\WordsDump.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

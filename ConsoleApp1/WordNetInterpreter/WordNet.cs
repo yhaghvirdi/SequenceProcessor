@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+using ConsoleApp1.Modules;
 
 namespace ConsoleApp1.WordNetInterpreter {
   public static class WordNet {

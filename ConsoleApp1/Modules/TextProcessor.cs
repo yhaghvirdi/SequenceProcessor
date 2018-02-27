@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ConsoleApp1 {
+namespace ConsoleApp1.Modules {
   public static class TextProcessor {
     public static string RemoveTag( string tagStart, string tagEnd, string input, bool justFirst = false ) {
       if ( input.Contains( tagStart ) ) {
@@ -24,6 +24,10 @@ namespace ConsoleApp1 {
         return sublist;
       }
       return new List<string>();
+    }
+
+    public static string[] GetWords( string sentence ) {
+      return sentence.Trim( ' ', '.' ).Split( ' ' );
     }
   }
 }
