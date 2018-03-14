@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConsoleApp1.WordNetInterpreter {
-  public static class WordsDump {
+﻿namespace ConsoleApp1.WordsAndMeanings {
+  public static partial class WordsDump {
     public static string[] WordsTest = {
       "tree",
       "jungle",

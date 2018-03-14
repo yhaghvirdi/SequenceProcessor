@@ -23,13 +23,13 @@ namespace ConsoleApp1.Modules {
       for ( var i = 0; i < arrayLength; i++ ) {
         str += Guid.NewGuid().ToString().Replace( "-", "" );
       }
-      Console.WriteLine( str );
+
       var bytes = Encoding.ASCII.GetBytes( str );
       var output = new BitArray( bytes );
 
-#if DEBUG
-      Logger.PrintBitArray( output );
-#endif
+      if ( Settings.DebugLogs )
+        Logger.PrintBitArray( output );
+
       return output;
     }
 
@@ -39,28 +39,20 @@ namespace ConsoleApp1.Modules {
       var sequenceLength = 0;
 
       for ( var i = 0; i < comparedBitSequence.Length; i++ ) {
-        if ( comparedBitSequence[i] ) {
-          sequenceLength++;
-        }
-        else {
-          if ( sequenceLength >= minimumPatternLength) {
+        if ( !comparedBitSequence[i] || i == comparedBitSequence.Length - 1 ) {
+          if ( sequenceLength >= minimumPatternLength ) {
             extractedPatterns.Add( new Pattern { StartIndex = i - sequenceLength, EndIndex = i - 1 } );
           }
           sequenceLength = 0;
+          continue;
         }
+        sequenceLength++;
       }
 
-#if DEBUG
-      Logger.PrintPattern( extractedPatterns );
-#endif
+      if ( Settings.DebugLogs )
+        Logger.PrintPattern( extractedPatterns );
+
       return extractedPatterns;
-    }
-
-    public static void PopulateBitArray( Random r, int arrayLength, BitArray arr1 ) {
-      var c = r.Next( arrayLength - 1 );
-      for ( var i = 0; i < c; i++ ) {
-        arr1[r.Next( arrayLength - 1 )] = true;
-      }
     }
 
     public static BitArray XNOR( BitArray arr1, BitArray arr2 ) {
@@ -79,22 +71,5 @@ namespace ConsoleApp1.Modules {
       return arr1Clone;
     }
 
-    public static int ReturnMaximumPatternLength( BitArray comparedBitSequence ) {
-      var globalLongestSequence = 0;
-      var localLongestSequence = 0;
-      for ( var i = 0; i < comparedBitSequence.Length; i++ ) {
-        if ( comparedBitSequence[i] ) {
-          localLongestSequence++;
-        }
-        else {
-          if ( localLongestSequence > globalLongestSequence ) {
-            globalLongestSequence = localLongestSequence;
-          }
-          localLongestSequence = 0;
-        }
-      }
-
-      return globalLongestSequence;
-    }
   }
 }

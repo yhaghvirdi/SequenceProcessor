@@ -1,64 +1,113 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 using ConsoleApp1.Models;
 using ConsoleApp1.Modules;
-using ConsoleApp1.WordNetInterpreter;
+using ConsoleApp1.WordBaseInterpreter;
+using ConsoleApp1.WordsAndMeanings;
+
+using DatabaseConnector;
+
+using HtmlAgilityPack;
+
+using WordsDump = ConsoleApp1.WordsAndMeanings.WordsDump;
 
 namespace ConsoleApp1 {
   class Program {
 
+    public static bool EscapePressed = false;
+
     static void Main( string[] args ) {
+      PatternDatabase.Initialize();
+      World.Initialize( new KidsEncyclopedia() );
 
+      //var tree = World.GetOrCreate( "tree" );
+      //World.AddMeaning( tree, "tall plant" );
+      //var tall = World.GetOrCreate( "tall" );
+      //var plant = World.GetOrCreate( "plant" );
+      //var human = World.GetOrCreate( "human" );
+      //var humanLinks = World.FindLinks( human );
+      //var treeLinks = World.FindLinks( tree );
 
-      //foreach ( var word in WordsDump.WordsTest ) {
-      //  var meaning = WordNet.GetWordMeaning( word );
-      //  if ( string.IsNullOrEmpty( meaning ) ) continue;
-      //  //get or create entity for word
-      //  var wordEntity = World.GetOrCreate( word );
-      //  //split meaning sentence
-      //  var sentenceWords = TextProcessor.GetWords( meaning );
-      //  //foreach word in sentence
-      //  foreach ( var sentenceWord in sentenceWords ) {
-      //    //get or create entity for word
-      //    var sentenceWordEntity = World.GetOrCreate( sentenceWord );
-      //    //link word to it
-      //    sentenceWordEntity.CreateLink( wordEntity, LinkSeverity.Weak );
-      //  }
-      //}
+      //tree.SaveToDatabase();
+      //tall.SaveToDatabase();
+      //plant.SaveToDatabase();
+      //human.SaveToDatabase();
 
-      foreach ( var word in WordsDump.WordsBasic ) {
-        World.GetOrCreate( word, 1 );
+      //World.ConsumeDatabase();
+
+      //var tree = World.GetOrCreate( "tree" );
+      //var treelinks = World.FindLinks( tree );
+
+      Logger.Level2Log( $"Starting Words basic" );
+      var wbBasic = new WordBase();
+      wbBasic.Populate( WordsDump.WordsBasic );
+      World.ConsumeWordBase( wbBasic, 3 );
+
+      Logger.Level2Log( $"Starting Words objects" );
+      var wbObjects = new WordBase();
+      wbObjects.Populate( WordsDump.WordsObjects );
+      World.ConsumeWordBase( wbObjects, 3 );
+
+      var files = Directory.GetFiles( "../../../../Wordbase/" );
+      var filesCount = files.Length;
+      for ( var i = 0; i < files.Length; i++ ) {
+        if ( EscapePressed ) break;
+        Logger.Level2Log( $"Starting file number {i}/{filesCount}: {files[i]}" );
+        var wb = new WordBase();
+        wb.Populate( files[i] );
+        World.ConsumeWordBase( wb, 3 );
       }
+
+      World.GetLinkDumpList();
+
+      Logger.Alarm();
 
       while ( true ) {
         Console.Write( "Write a word: " );
         var input = Console.ReadLine();
-        var entity = World.GetOrCreate( input );
-        if ( entity == null ) {
-          Console.WriteLine( "Not found." );
-          continue;
-        }
-        var links = World.FindLinks( entity );
-        foreach ( var link in links ) {
-          Console.WriteLine($"{link.Right.Name}:" );
-          Logger.PrintPattern( link.Pattern );
-          Console.WriteLine("--------------------------");
-        }
 
-        Console.ReadLine();
+        switch ( TextProcessor.FindIntent( input ) ) {
+          case IntentType.SearchWord:
+            var searchedEntity = World.GetOrCreate( input, 1 );
+            if ( searchedEntity == null ) {
+              Console.WriteLine( "Not found." );
+              continue;
+            }
+            var links = World.FindLinks( searchedEntity );
+            foreach ( var link in links ) {
+              Console.WriteLine( $"{link.Right.Name}:" );
+              Logger.PrintPattern( link.Pattern );
+              Console.WriteLine( "--------------------------" );
+            }
+            break;
+
+          case IntentType.AddMeaning:
+            var words = TextProcessor.GetWords( input );
+            var meaning = string.Join( " ", words.Skip( 1 ) );
+            var entity = World.GetOrCreate( words[0], 1 );
+            World.AddMeaning( entity, meaning );
+            break;
+
+          case IntentType.Command:
+            var command = TextProcessor.GetWords( input );
+            CommandProcessor.ApplyCommand( command );
+            break;
+
+          case IntentType.NotSure:
+            Console.WriteLine( "Not sure what you mean." );
+            break;
+          default:
+            throw new ArgumentOutOfRangeException();
+        }
       }
     }
 
+    
 
     private static void Samples() {
       //var wordList = new[] { "tree", "boy", "cup", "society", "brain", "orange", "glue", "left", "interesting", "cut", "crocodile", "bora bora", "salam" };
@@ -84,34 +133,5 @@ namespace ConsoleApp1 {
       //}
     }
 
-    private static void testperformance( int iterationCount, int arrayLength ) {
-      List<BitArray> testLists1 = new List<BitArray>();
-      List<BitArray> testLists2 = new List<BitArray>();
-
-      Random r = new Random( DateTime.Now.Millisecond );
-      for ( var i = 0; i < iterationCount; i++ ) {
-        var tempArr = new BitArray( arrayLength );
-        SequenceProcessor.PopulateBitArray( r, arrayLength, tempArr );
-        testLists1.Add( tempArr );
-      }
-      for ( var i = 0; i < iterationCount; i++ ) {
-        var tempArr = new BitArray( arrayLength );
-        SequenceProcessor.PopulateBitArray( r, arrayLength, tempArr );
-        testLists2.Add( tempArr );
-      }
-
-      Stopwatch time = new Stopwatch();
-      time.Start();
-
-      for ( var i = 0; i < iterationCount; i++ ) {
-        var arr4 = SequenceProcessor.XNOR( testLists1[i], testLists2[i] );
-        SequenceProcessor.ReturnMaximumPatternLength( arr4 );
-      }
-
-      time.Stop();
-      Console.WriteLine( time.Elapsed );
-      Console.WriteLine( time.ElapsedMilliseconds );
-      Console.ReadLine();
-    }
   }
 }

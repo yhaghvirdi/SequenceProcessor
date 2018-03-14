@@ -6,11 +6,21 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1 {
   public static class Settings {
-    public static int SequenceLength => 512;
-    public static int SequenceLengthInChar => SequenceLength / 16;
-    public static int MinimumPatternLength => 32;
-    public static int LinkMinimumSize => 32;
-    public static int LinkMediumsize => 48;
-    public static int LinkMaximumSize => 64;
+    public static int SequenceLength => 1024;
+    public static int MinimumPatternLength => 50;
+    public static int LinkMinimumSize => 48;
+    public static int LinkMediumSize => 64;
+    public static int LinkMaximumSize => 80;
+
+    public static int LinkStregtheningMinimumSize => 10;
+    public static int LinkStregtheningMediumSize => 13;
+    public static int LinkStregtheningMaximumSize => 16;
+
+    public static bool DebugLogs => true;
+    public static bool Level2Logs => true;
+
+    public static int Level2LogEveryNObjects => 50;
+
+    public static int DatabaseReadPageSize => 20;
   }
 }

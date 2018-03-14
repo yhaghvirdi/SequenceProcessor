@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,5 +43,24 @@ namespace ConsoleApp1 {
       Console.ResetColor();
     }
 
+    public static void Alarm() {
+      SoundPlayer alarm = new SoundPlayer();
+      alarm.SoundLocation = Environment.CurrentDirectory + "\\wader.wav";
+      alarm.Play();
+    }
+
+    public static IntentType LogIntent( IntentType intentType ) {
+      Console.ForegroundColor = ConsoleColor.Green;
+      Console.WriteLine( $"Intent: {intentType.ToString()}" );
+      Console.ResetColor();
+      return intentType;
+    }
+
+    public static void Level2Log( string text ) {
+      if ( !Settings.Level2Logs ) return;
+      Console.ForegroundColor = ConsoleColor.Yellow;
+      Console.WriteLine($"{DateTime.Now:HH:mm:ss.ff}: {text}");
+      Console.ResetColor();
+    }
   }
 }

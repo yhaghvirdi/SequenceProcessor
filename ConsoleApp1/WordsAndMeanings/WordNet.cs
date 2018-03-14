@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 using ConsoleApp1.Modules;
 
-namespace ConsoleApp1.WordNetInterpreter {
-  public static class WordNet {
+namespace ConsoleApp1.WordsAndMeanings {
+  public class WordNet:IWordsMaster{
     private static string url = "http://wordnetweb.princeton.edu/perl/webwn?s={0}&sub=Search+WordNet&o2=&o0=&o8=1&o1=1&o7=&o5=&o9=&o6=&o3=&o4=&h=000000000000000";
 
-    public static string GetWordMeaning( string word ) {
+    public string GetWordMeaning( string word ) {
       var result = string.Empty;
       var request = (HttpWebRequest) WebRequest.Create( string.Format( url, word ) );
       using ( var response = request.GetResponse() ) {

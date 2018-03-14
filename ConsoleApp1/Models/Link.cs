@@ -8,6 +8,15 @@ namespace ConsoleApp1.Models {
     public Entity Right { get; set; }
     public List<Pattern> Pattern { get; set; }
 
+    public int Strength
+    {
+      get
+      {
+        if ( Pattern == null || !Pattern.Any() ) return 0;
+        return Pattern.OrderByDescending( item => item.Length ).First().Length;
+      }
+    }
+
     public int CompareTo( object obj ) {
       if ( !( obj is Link link ) )
         throw new NotImplementedException();
