@@ -18,12 +18,14 @@ namespace ConsoleApp1.Models {
     }
 
     public Link CreateLink( Entity to, LinkSeverity severity = LinkSeverity.Weak ) {
-      var randomGenerator = new Random( DateTime.Now.Millisecond );
-      var linkSize = GetLinkSize( randomGenerator, severity );
-      var startIndex = randomGenerator.Next( Settings.SequenceLength - linkSize - 1 );
+      if ( !Name.Equals( to.Name, StringComparison.InvariantCultureIgnoreCase ) ) {
+        var randomGenerator = new Random( DateTime.Now.Millisecond );
+        var linkSize = GetLinkSize( randomGenerator, severity );
+        var startIndex = randomGenerator.Next( Settings.SequenceLength - linkSize - 1 );
 
-      for ( var i = startIndex; i < startIndex + linkSize; i++ ) {
-        Sequence.Set( i, to.Sequence.Get( i ) );
+        for ( var i = startIndex; i < startIndex + linkSize; i++ ) {
+          Sequence.Set( i, to.Sequence.Get( i ) );
+        }
       }
 
       return new Link {
@@ -42,9 +44,10 @@ namespace ConsoleApp1.Models {
       var randomGenerator = new Random( DateTime.Now.Millisecond );
       var linkSize = GetLinkSize( randomGenerator, severity, LinkApplyType.Strengthen );
       var startIndex = strongestPattern.EndIndex + linkSize <= Settings.SequenceLength - 1 ? strongestPattern.EndIndex + 1 : strongestPattern.StartIndex - linkSize;
-
-      for ( var i = startIndex; i < startIndex + linkSize; i++ ) {
-        Sequence.Set( i, entity.Sequence.Get( i ) );
+      if ( startIndex >= 0 && startIndex < Settings.SequenceLength - linkSize - 1 ) {
+        for ( var i = startIndex; i < startIndex + linkSize; i++ ) {
+          Sequence.Set( i, entity.Sequence.Get( i ) );
+        }
       }
 
       return new Link {

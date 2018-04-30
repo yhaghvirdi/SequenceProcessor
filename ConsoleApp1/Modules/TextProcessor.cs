@@ -15,9 +15,13 @@ namespace ConsoleApp1.Modules {
 
       if ( splitted.First().StartsWith( "-" ) ) return IntentType.Command;
 
-      if ( splitted.Length == 1 ) return Logger.LogIntent( IntentType.SearchWord );
+      if ( splitted.Length == 1 ) return Logger.LogIntent( IntentType.SearchLinks );
 
       if ( splitted.First().EndsWith( ":" ) ) return Logger.LogIntent( IntentType.AddMeaning );
+
+      if ( splitted.First().EndsWith( "=>" ) ) return Logger.LogIntent( IntentType.AddDefinition );
+
+      if ( splitted.First().ToLower() + " " + splitted[1].ToLower() == "what is" ) return Logger.LogIntent( IntentType.SearchMeanings );
 
       return Logger.LogIntent( IntentType.NotSure );
     }
@@ -47,6 +51,11 @@ namespace ConsoleApp1.Modules {
 
     public static string[] GetWords( string sentence ) {
       return RemoveAllButAlphanumeric( sentence.Trim( ' ', '.' ) ).Split( ' ' ).Except( new[] { " " } ).ToArray();
+    }
+
+    public static string GetSubSentence( string sentence, int skipWords ) {
+      var searchedEntityMeaningWords = GetWords( sentence );
+      return string.Join( " ", searchedEntityMeaningWords.Skip( skipWords ) );
     }
 
     private static string RemoveAllButAlphanumeric(string input ) {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 
 using ConsoleApp1.Modules;
+using ConsoleApp1.WordBaseInterpreter;
 
 using HtmlAgilityPack;
 
@@ -11,7 +12,7 @@ namespace ConsoleApp1.WordsAndMeanings {
   public class KidsEncyclopedia:IWordsMaster{
     private static string url = "https://kids.britannica.com/kids/search/dictionary?query={0}";
 
-    public string GetWordMeaning( string word ) {
+    public string GetWordDefinition( string word ) {
       var result = string.Empty;
       var web = new HtmlWeb();
       try {
@@ -27,5 +28,8 @@ namespace ConsoleApp1.WordsAndMeanings {
       return result;
     }
 
+    public WordBase GetRelatedWords( string word ) {
+      return null;
+    }
   }
 }

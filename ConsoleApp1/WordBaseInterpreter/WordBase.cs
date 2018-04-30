@@ -9,7 +9,7 @@ using HtmlAgilityPack;
 
 namespace ConsoleApp1.WordBaseInterpreter {
   public class WordBase {
-    public string[] Meanings { get; set; }
+    public string[] Definitions { get; set; }
     public string[] Words { get; set; }
 
     public void Populate(string filePath ) {
@@ -20,7 +20,7 @@ namespace ConsoleApp1.WordBaseInterpreter {
       while ( !filestream.EndOfStream ) {
         var lineVal = filestream.ReadLine();
         if ( firstLine ) {
-          Meanings = lineVal.Split( ',' );
+          Definitions = lineVal.Split( ',' );
           firstLine = false;
           continue;
         }
@@ -31,7 +31,7 @@ namespace ConsoleApp1.WordBaseInterpreter {
 
     public void Populate( string[] wordList, string[] meaningsList = null ) {
       Words = wordList;
-      Meanings = meaningsList;
+      Definitions = meaningsList;
     }
 
     //just to keep this code safe

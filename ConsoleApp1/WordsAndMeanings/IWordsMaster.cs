@@ -1,5 +1,10 @@
-﻿namespace ConsoleApp1.WordsAndMeanings {
+﻿using System;
+
+using ConsoleApp1.WordBaseInterpreter;
+
+namespace ConsoleApp1.WordsAndMeanings {
   public interface IWordsMaster {
-    string GetWordMeaning( string word );
+    string GetWordDefinition( string word );
+    WordBase GetRelatedWords( string word );
   }
 }

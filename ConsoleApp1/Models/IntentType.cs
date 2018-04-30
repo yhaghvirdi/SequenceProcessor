@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1.Models {
   public enum IntentType {
-    SearchWord,
+    SearchMeanings,
+    SearchLinks,
+    AddDefinition,
     AddMeaning,
     NotSure,
     Command

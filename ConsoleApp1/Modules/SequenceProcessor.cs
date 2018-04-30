@@ -49,9 +49,7 @@ namespace ConsoleApp1.Modules {
         sequenceLength++;
       }
 
-      if ( Settings.DebugLogs )
-        Logger.PrintPattern( extractedPatterns );
-
+      Logger.PrintPattern( extractedPatterns );
       return extractedPatterns;
     }
 

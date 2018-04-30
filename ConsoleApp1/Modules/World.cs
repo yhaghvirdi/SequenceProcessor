@@ -16,6 +16,8 @@ using DatabaseConnector;
 namespace ConsoleApp1.Modules {
   public static class World {
     public static List<Entity> Data = new List<Entity>();
+    public static List<Entity> Wisdom = new List<Entity>();
+
     public static IWordsMaster _wordsMaster;
     public static List<List<Link>> LinksDumpList { get; set; }
 
@@ -35,44 +37,73 @@ namespace ConsoleApp1.Modules {
       return result;
     }
 
-    public static Entity GetOrCreate( string word, int getMeaningInvardsUpToLayer = 0 ) {
+    public static List<Meaning> FindMeanings( Entity entity ) {
+      var result = new List<Meaning>();
+      foreach ( var worldEntity in Wisdom ) {
+        var patterns = SequenceProcessor.CalculateSimillarPatterns( entity.Sequence, worldEntity.Sequence, Settings.MinimumPatternLength );
+        if ( !patterns.Any() ) continue;
+        result.Add( new Meaning { Left = entity, Right = worldEntity, Pattern = patterns } );
+      }
+      result.Sort();
+      return result;
+    }
+
+    public static Meaning FindEntityForMeaning( Entity meaning ) {
+      var result = new List<Meaning>();
+      foreach ( var worldEntity in Data ) {
+        var patterns = SequenceProcessor.CalculateSimillarPatterns( meaning.Sequence, worldEntity.Sequence, Settings.MinimumPatternLength );
+        if ( !patterns.Any() ) continue;
+        result.Add( new Meaning { Left = worldEntity, Right = meaning, Pattern = patterns } );
+      }
+      result.Sort();
+      return result.Any() ? result.First() : null;
+    }
+
+    public static Entity GetOrCreate( string word, int getDefinitionInvardsUpToLayer = 0, bool addWisdom = false, bool refreshMeaning = false ) {
       //try to get entity from world
       var entity = Data.FirstOrDefault( item => item.Name.Equals( word ) );
-      if ( entity != null ) return entity;
+      if ( entity != null && !refreshMeaning ) return entity;
 
-      //create entity
-      entity = new Entity( word );
-      Data.Add( entity );
+      //create entity if not existed
+      if ( entity == null ) {
+        entity = new Entity( word );
+        Data.Add( entity );
+      }
 
       if ( Data.Count % Settings.Level2LogEveryNObjects == 0 ) {
         Logger.Level2Log( $"Number of entities reached {Data.Count}" );
       }
 
-      //if need to get the meaning
-      if ( getMeaningInvardsUpToLayer > 0 ) {
-        var meaning = string.Empty;
+      //if need to get the definition
+      if ( getDefinitionInvardsUpToLayer > 0 ) {
+        var definition = string.Empty;
 
         try {
-          meaning = _wordsMaster.GetWordMeaning( word );
+          definition = _wordsMaster.GetWordDefinition( word );
         }
         catch ( NullReferenceException ) {
           Logger.Log( "World not initialized." );
         }
 
-        if ( !string.IsNullOrEmpty( meaning ) )
-          AddMeaning( entity, meaning, getMeaningInvardsUpToLayer - 1 );
+        if ( !string.IsNullOrEmpty( definition ) )
+          AddDefinition( entity, definition, getDefinitionInvardsUpToLayer - 1, LinkSeverity.Weak, addWisdom );
+      }
+
+      var relatedWords = _wordsMaster.GetRelatedWords( word );
+      if(relatedWords != null && relatedWords.Definitions.Any() ) {
+        ConsumeWordBase( relatedWords );
       }
 
       return entity;
     }
 
-    public static void AddMeaning( Entity entity, string meaning, int getMeaningInvardsUpToLayer = 0, LinkSeverity severity = LinkSeverity.Weak ) {
-      var sentenceWords = TextProcessor.GetWords( meaning );
+    public static void AddDefinition( Entity entity, string definition, int getDefinitionInvardsUpToLayer = 0, LinkSeverity severity = LinkSeverity.Weak, bool shouldAddAsWisdom = false ) {
+      var sentenceWords = TextProcessor.GetWords( definition );
       foreach ( var sentenceWord in sentenceWords ) {
         if ( string.IsNullOrEmpty( sentenceWord ) ) continue;
 
         //get or create entity for word
-        var sentenceWordEntity = GetOrCreate( sentenceWord, getMeaningInvardsUpToLayer - 1 );
+        var sentenceWordEntity = GetOrCreate( sentenceWord, getDefinitionInvardsUpToLayer - 1 );
 
         //calculate if a link between entities already exists
         var currentPatterns = SequenceProcessor.CalculateSimillarPatterns( entity.Sequence, sentenceWordEntity.Sequence, Settings.MinimumPatternLength );
@@ -83,9 +114,12 @@ namespace ConsoleApp1.Modules {
         else
           sentenceWordEntity.CreateLink( entity, severity );
       }
+
+      if ( shouldAddAsWisdom )
+        Wisdom.Add( new Entity( definition, false ) { Sequence = (BitArray) entity.Sequence.Clone() } );
     }
 
-    public static void ConsumeWordBase( WordBase wordbase, int getMeaningInvardsUpToLayer = 0 ) {
+    public static void ConsumeWordBase( WordBase wordbase, int getDefinitionInvardsUpToLayer = 0, bool addAsWisdom = false ) {
       foreach ( var word in wordbase.Words ) {
         if ( Program.EscapePressed || ( Console.KeyAvailable && Console.ReadKey( true ).Key == ConsoleKey.Escape ) ) {
           Program.EscapePressed = true;
@@ -94,11 +128,11 @@ namespace ConsoleApp1.Modules {
 
         foreach ( var separatedWord in word.Split( ' ' ) ) {
           if ( string.IsNullOrEmpty( separatedWord ) ) continue;
-          var wordEntity = GetOrCreate( separatedWord, getMeaningInvardsUpToLayer );
+          var wordEntity = GetOrCreate( separatedWord, getDefinitionInvardsUpToLayer, addAsWisdom );
 
-          if ( wordbase.Meanings == null ) continue;
-          foreach ( var meaning in wordbase.Meanings ) {
-            AddMeaning( wordEntity, meaning, 0, LinkSeverity.Strong );
+          if ( wordbase.Definitions == null ) continue;
+          foreach ( var definition in wordbase.Definitions ) {
+            AddDefinition( wordEntity, definition, 0, LinkSeverity.Strong );
           }
         }
       }
@@ -118,6 +152,11 @@ namespace ConsoleApp1.Modules {
       if ( reset || LinksDumpList == null ) {
         var allLinks = new List<List<Link>>();
         foreach ( var entity in Data ) {
+          if ( Program.EscapePressed || ( Console.KeyAvailable && Console.ReadKey( true ).Key == ConsoleKey.Escape ) ) {
+            Program.EscapePressed = true;
+            break;
+          }
+
           allLinks.Add( World.FindLinks( entity ) );
         }
         return LinksDumpList = allLinks;

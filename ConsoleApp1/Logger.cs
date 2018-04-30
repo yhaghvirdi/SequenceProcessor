@@ -18,17 +18,22 @@ namespace ConsoleApp1 {
     }
 
     public static void PrintBitArray( BitArray arr1 ) {
+      if ( !Settings.DebugLogs ) return;
+
       foreach ( bool o in arr1 ) {
         Console.Write( o ? 1 : 0 );
       }
       Console.WriteLine();
     }
 
-    public static void PrintPattern(List<Pattern> patterns ) {
+    public static void PrintPattern( List<Pattern> patterns ) {
+      if ( !Settings.DebugLogs ) return;
+
       Console.ForegroundColor = ConsoleColor.Yellow;
       if ( patterns.Any() ) {
         foreach ( var pattern in patterns ) {
           Console.WriteLine( $"Pattern Length:{pattern.Length}, Start:{pattern.StartIndex}" );
+          Console.WriteLine( "--------------------------" );
         }
       }
       else {
@@ -38,6 +43,8 @@ namespace ConsoleApp1 {
     }
 
     public static void PrintLink( int startIndex, int linkSize ) {
+      if ( !Settings.DebugLogs ) return;
+
       Console.ForegroundColor = ConsoleColor.Cyan;
       Console.WriteLine( $"Link Start: {startIndex}, Size: {linkSize}" );
       Console.ResetColor();
@@ -50,6 +57,7 @@ namespace ConsoleApp1 {
     }
 
     public static IntentType LogIntent( IntentType intentType ) {
+      if ( !Settings.DebugLogs ) return intentType;
       Console.ForegroundColor = ConsoleColor.Green;
       Console.WriteLine( $"Intent: {intentType.ToString()}" );
       Console.ResetColor();
@@ -59,7 +67,7 @@ namespace ConsoleApp1 {
     public static void Level2Log( string text ) {
       if ( !Settings.Level2Logs ) return;
       Console.ForegroundColor = ConsoleColor.Yellow;
-      Console.WriteLine($"{DateTime.Now:HH:mm:ss.ff}: {text}");
+      Console.WriteLine( $"{DateTime.Now:HH:mm:ss.ff}: {text}" );
       Console.ResetColor();
     }
   }

@@ -55,6 +55,7 @@
     <Compile Include="CommandProcessor.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\IntentType.cs" />
+    <Compile Include="Models\Meaning.cs" />
     <Compile Include="Models\Link.cs" />
     <Compile Include="Models\LinkApplyType.cs" />
     <Compile Include="Models\LinkSeverity.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Modules\TextProcessor.cs" />
     <Compile Include="WordBaseInterpreter\WordBase.cs" />
     <Compile Include="WordsAndMeanings\IWordsMaster.cs" />
+    <Compile Include="WordsAndMeanings\Wordsmyth.cs" />
     <Compile Include="WordsAndMeanings\KidsEncyclopedia.cs" />
     <Compile Include="WordsAndMeanings\WordsDump2.cs" />
     <Compile Include="WordsAndMeanings\WordNet.cs" />

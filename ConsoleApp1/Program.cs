@@ -12,10 +12,6 @@ using ConsoleApp1.WordsAndMeanings;
 
 using DatabaseConnector;
 
-using HtmlAgilityPack;
-
-using WordsDump = ConsoleApp1.WordsAndMeanings.WordsDump;
-
 namespace ConsoleApp1 {
   class Program {
 
@@ -23,9 +19,16 @@ namespace ConsoleApp1 {
 
     static void Main( string[] args ) {
       PatternDatabase.Initialize();
-      World.Initialize( new KidsEncyclopedia() );
+      World.Initialize( new Wordsmyth() );
 
-      //var tree = World.GetOrCreate( "tree" );
+      var a = new Wordsmyth();
+      var txt = string.Empty;
+
+      txt += a.GetWordDefinition( "tree" ) + ". ";
+      txt += a.GetWordDefinition( "plant" ) + ". ";
+      txt += a.GetWordDefinition( "jungle" ) + ". ";
+      txt += a.GetWordDefinition( "wood" ) + ".";
+
       //World.AddMeaning( tree, "tall plant" );
       //var tall = World.GetOrCreate( "tall" );
       //var plant = World.GetOrCreate( "plant" );
@@ -40,70 +43,35 @@ namespace ConsoleApp1 {
 
       //World.ConsumeDatabase();
 
-      //var tree = World.GetOrCreate( "tree" );
-      //var treelinks = World.FindLinks( tree );
-
       Logger.Level2Log( $"Starting Words basic" );
       var wbBasic = new WordBase();
       wbBasic.Populate( WordsDump.WordsBasic );
-      World.ConsumeWordBase( wbBasic, 3 );
+      World.ConsumeWordBase( wbBasic, 1, true );
 
       Logger.Level2Log( $"Starting Words objects" );
       var wbObjects = new WordBase();
       wbObjects.Populate( WordsDump.WordsObjects );
-      World.ConsumeWordBase( wbObjects, 3 );
+      World.ConsumeWordBase( wbObjects, 1, true );
 
-      var files = Directory.GetFiles( "../../../../Wordbase/" );
-      var filesCount = files.Length;
-      for ( var i = 0; i < files.Length; i++ ) {
-        if ( EscapePressed ) break;
-        Logger.Level2Log( $"Starting file number {i}/{filesCount}: {files[i]}" );
-        var wb = new WordBase();
-        wb.Populate( files[i] );
-        World.ConsumeWordBase( wb, 3 );
-      }
+      //var files = Directory.GetFiles( "../../../../Wordbase/" );
+      //var filesCount = files.Length;
+      //for ( var i = 0; i < files.Length; i++ ) {
+      //  if ( EscapePressed ) break;
+      //  Logger.Level2Log( $"Starting file number {i}/{filesCount}: {files[i]}" );
+      //  var wb = new WordBase();
+      //  wb.Populate( files[i] );
+      //  World.ConsumeWordBase( wb, 1 );
+      //}
 
-      World.GetLinkDumpList();
+      if ( !EscapePressed )
+        World.GetLinkDumpList();
 
-      Logger.Alarm();
+      //Logger.Alarm();
 
       while ( true ) {
-        Console.Write( "Write a word: " );
+        Console.Write( "What? " );
         var input = Console.ReadLine();
-
-        switch ( TextProcessor.FindIntent( input ) ) {
-          case IntentType.SearchWord:
-            var searchedEntity = World.GetOrCreate( input, 1 );
-            if ( searchedEntity == null ) {
-              Console.WriteLine( "Not found." );
-              continue;
-            }
-            var links = World.FindLinks( searchedEntity );
-            foreach ( var link in links ) {
-              Console.WriteLine( $"{link.Right.Name}:" );
-              Logger.PrintPattern( link.Pattern );
-              Console.WriteLine( "--------------------------" );
-            }
-            break;
-
-          case IntentType.AddMeaning:
-            var words = TextProcessor.GetWords( input );
-            var meaning = string.Join( " ", words.Skip( 1 ) );
-            var entity = World.GetOrCreate( words[0], 1 );
-            World.AddMeaning( entity, meaning );
-            break;
-
-          case IntentType.Command:
-            var command = TextProcessor.GetWords( input );
-            CommandProcessor.ApplyCommand( command );
-            break;
-
-          case IntentType.NotSure:
-            Console.WriteLine( "Not sure what you mean." );
-            break;
-          default:
-            throw new ArgumentOutOfRangeException();
-        }
+        CommandProcessor.ProcessInput( input );
       }
     }
 

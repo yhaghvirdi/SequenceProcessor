@@ -22,5 +22,11 @@ namespace ConsoleApp1 {
     public static int Level2LogEveryNObjects => 50;
 
     public static int DatabaseReadPageSize => 20;
+
+
+    public static int MeaningCloseThreshold => LinkMaximumSize + LinkMinimumSize / 2;
+    public static int MeaningExactThreshold => MeaningCloseThreshold * 2;
+
+    
   }
 }
